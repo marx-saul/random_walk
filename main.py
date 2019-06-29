@@ -2,13 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import copy
+import sys
 
 INF = -1
 Going = 0
 PlayerLose = 1
 MasterLose = 2
 MAX_TIME = 2 * 10**3
-MAX_SIM  = 10**3
+MAX_SIM  = 2 * 10**3
 
 class Game:
     # money, money, probability of player winning
@@ -36,8 +37,8 @@ class Game:
     
 
 # plot the transition of the money player has
-def simulate1(game, max_time = MAX_TIME, flag = False):
-    trans = [game.player]
+def simulate1(game, max_time = MAX_SIM, flag = False):
+    trans = [game.player] ; step_num = max_time
     
     for i in range(0, max_time):
        result = game.step()
@@ -47,7 +48,7 @@ def simulate1(game, max_time = MAX_TIME, flag = False):
        trans.append(game.player)
        #print(game.player)
        
-       if (result != Going): break
+       if (result != Going): step_num = i+1; break
     
     if flag:
         plt.plot( np.array(range(0, step_num+1)), np.array(trans) )
@@ -77,8 +78,37 @@ def simulate2(game, sim_num = MAX_SIM, max_time = MAX_TIME):
     plt.show()
         
 
+# ().py simulation_type player_money master_money probability
 if __name__ == "__main__":
-    game = Game(player=20, master=INF, p=0.50)
+    args = sys.argv
+    sim_type = 1; pm = 20; mm = INF; pr = 0.50
+    
+    if len(args) >= 5:
+        sim_type = int(args[1])
+        pm = int(args[2])
+        if args[3] == 'INF' or args[3] == 'inf':
+            mm = INF
+        else:
+            mm = int(args[3])
+        pr = float(args[4])
+    
+    if len(args) == 4:
+        sim_type = int(args[1])
+        pm = int(args[2])
+        if args[3] == 'INF' or args[3] == 'inf':
+            mm = INF
+        else:
+            mm = int(args[3])
+            
+    if len(args) == 3:
+        sim_type = int(args[1])
+        pm = int(args[2])
+    
+    if len(args) == 2:
+        sim_type = int(args[1])
+    
+    game = Game(player=pm, master=mm, p=pr)
     #time = simulate1(game, flag=True)
     #print("time = ", time)
-    simulate2(game)
+    if sim_type == 1: simulate1(game, flag=True)
+    else: simulate2(game)
