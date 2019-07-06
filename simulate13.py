@@ -2,14 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import copy
-import sys
+from math import *
+from statistics import mean, median,variance,stdev
+from time import sleep
 
 INF = -1
 Going = 0
 PlayerLose = 1
 MasterLose = 2
-MAX_TIME = 2 * 10**3
-MAX_SIM  = 2 * 10**3
+MAX_TIME = 580
+MAX_SIM  = 15000
 
 class Game:
     # money, money, probability of player winning
@@ -36,22 +38,26 @@ class Game:
             else: return Going
 
 def simulate13(game, sim_num = MAX_SIM, max_time = MAX_TIME):
-    game_ = copy.deepcopy(game)
     times = [0] * (max_time+1)
     
     for i in range(0, sim_num):
-        step_num = 0;
-        
+        game_ = copy.deepcopy(game)
+        cnt = 0;
         for j in range(1, max_time+1):
-            step_num += 1
+            cnt += 1
             result = game_.step()
-            if result != Going: break
-            
-        times[step_num] += 1;
-        game_ = copy.deepcopy(game);
+            if result != Going: times[cnt] += 1; break;
     
+    solution = [0] * (max_time+1)
+    sol = sim_num / 2**20
+    
+    for t in range(20, max_time+1, 2):
+        solution[t] = sol
+        a = (t-20)/2
+        sol *= (2*a*a + 41*a + 210)/(2*a*a + 44*a + 42)
+    
+    plt.plot( np.array(range(0, max_time+1)), np.array(solution), marker='o', color='b', markerfacecolor="w", markersize=5, linestyle='None' )
     plt.bar( np.array(range(0, max_time+1)), np.array(times) )
-    plt.xlabel("step") ; plt.ylabel("frequency") ; plt.title("number of steps to bankrupt")
     plt.show()
 
 # ().py simulation_type player_money master_money probability
